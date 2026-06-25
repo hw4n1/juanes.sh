@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404" description="Page not found." canonicalURL={new URL('/404/', Astro.site)}>
+  <section class="not-found">
+    <p class="prompt-prefix" aria-hidden="true">$ cat {Astro.url.pathname}</p>
+    <h1>404: cat: No such file or directory</h1>
+    <p>This path doesn't exist.</p>
+    <a href="/">← back to ~/juanes</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 5rem 1.25rem;
+    text-align: center;
+  }
+
+  .prompt-prefix {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+
+  h1 {
+    font-family: var(--font-mono);
+    font-size: var(--text-xl);
+  }
+
+  p {
+    color: var(--ink-700);
+    margin-top: 1rem;
+  }
+
+  a {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--accent);
+  }
+</style>

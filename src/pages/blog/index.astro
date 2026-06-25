@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getPublishedPosts } from '../../utils/posts';
+
+const posts = await getPublishedPosts();
+---
+
+<BaseLayout
+  title="Blog"
+  description="Articles on networking, infrastructure, BGP/ASN, privacy, homelab, and security."
+  canonicalURL={new URL('/blog/', Astro.site)}
+>
+  <section class="blog-index">
+    <header>
+      <p class="prompt-prefix" aria-hidden="true">$ ls posts/</p>
+      <h1>Blog</h1>
+    </header>
+    {
+      posts.length > 0 ? (
+        <div class="post-list">
+          {posts.map((post) => <PostCard post={post} />)}
+        </div>
+      ) : (
+        <p class="empty">No posts published yet.</p>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .blog-index {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 3rem 1.25rem 4rem;
+  }
+
+  .prompt-prefix {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+    margin-bottom: 1.5rem;
+  }
+
+  .empty {
+    color: var(--ink-500);
+    padding: 1.5rem 0;
+  }
+</style>

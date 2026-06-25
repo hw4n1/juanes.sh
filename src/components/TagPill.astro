@@ -1,0 +1,33 @@
+---
+interface Props {
+  tag: string;
+  href?: string;
+  /** Render as a plain span instead of a link, for tags with no matching posts yet (e.g. a skills list). */
+  static?: boolean;
+}
+
+const { tag, href = `/blog/tag/${tag}/`, static: isStatic = false } = Astro.props;
+const Tag = isStatic ? 'span' : 'a';
+---
+
+<Tag href={isStatic ? undefined : href} class="tag-pill">#{tag}</Tag>
+
+<style>
+  .tag-pill {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.02em;
+    color: var(--ink-700);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+    text-decoration: none;
+  }
+
+  .tag-pill:hover {
+    color: var(--accent);
+    border-color: var(--brand-accent);
+  }
+</style>

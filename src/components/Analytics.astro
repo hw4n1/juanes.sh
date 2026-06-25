@@ -1,0 +1,9 @@
+---
+// Privacy-first, self-hosted analytics (Umami), off by default.
+// Enable it by setting PUBLIC_UMAMI_URL and PUBLIC_UMAMI_WEBSITE_ID
+// in your environment (see README → "Optional analytics").
+const umamiUrl = import.meta.env.PUBLIC_UMAMI_URL;
+const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
+---
+
+{umamiUrl && umamiWebsiteId && <script is:inline defer src={umamiUrl} data-website-id={umamiWebsiteId}></script>}

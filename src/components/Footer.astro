@@ -1,0 +1,69 @@
+---
+import { SOCIAL_LINKS } from '../consts';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="inner">
+    <p class="line">
+      <span>~/juanes</span> · © {year} Juan Esteban Muñoz Díaz
+    </p>
+    <nav aria-label="External links">
+      <ul>
+        {
+          SOCIAL_LINKS.map((link) => (
+            <li>
+              <a href={link.url} rel="me noopener noreferrer" target="_blank">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+        <li><a href="/rss.xml">RSS</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border);
+    margin-top: 4rem;
+  }
+
+  .inner {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--ink-700);
+  }
+
+  .line span {
+    color: var(--accent);
+  }
+
+  nav ul {
+    display: flex;
+    gap: 1.1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  nav a {
+    color: var(--ink-700);
+    text-decoration: none;
+  }
+
+  nav a:hover {
+    color: var(--accent);
+  }
+</style>

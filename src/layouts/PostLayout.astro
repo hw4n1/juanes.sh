@@ -1,0 +1,123 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { MarkdownHeading } from 'astro';
+import BaseLayout from './BaseLayout.astro';
+import TagPill from '../components/TagPill.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import { readingTime } from '../utils/readingTime';
+import { formatDate } from '../utils/date';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  headings: MarkdownHeading[];
+  canonicalURL: string;
+}
+
+const { post, headings, canonicalURL } = Astro.props;
+const { title, description, pubDate, updatedDate, tags, lang } = post.data;
+const dateOptions: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: '2-digit' };
+const updatedLabel = lang === 'en' ? 'updated' : 'actualizado';
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalURL={canonicalURL}
+  lang={lang}
+  type="article"
+  publishedTime={pubDate}
+  modifiedTime={updatedDate}
+  tags={tags}
+>
+  <article class="post-grid">
+    <header class="post-header measure">
+      <p class="prompt-prefix" aria-hidden="true">$ cat {post.id}.md</p>
+      <h1>{title}</h1>
+      <p class="meta">
+        <time datetime={pubDate.toISOString()}>{formatDate(pubDate, lang, dateOptions)}</time>
+        {updatedDate && <span>· {updatedLabel} {formatDate(updatedDate, lang, dateOptions)}</span>}
+        <span aria-hidden="true">·</span>
+        <span>{readingTime(post.body ?? '', lang)}</span>
+      </p>
+      {
+        tags.length > 0 && (
+          <ul class="tags">
+            {tags.map((tag) => (
+              <li><TagPill tag={tag} /></li>
+            ))}
+          </ul>
+        )
+      }
+    </header>
+
+    <TableOfContents headings={headings} />
+
+    <div class="prose-content">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .post-grid {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 4rem;
+    display: grid;
+    grid-template-areas: 'header' 'toc' 'body';
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+
+  @media (min-width: 64rem) {
+    .post-grid {
+      grid-template-areas: 'header toc' 'body toc';
+      grid-template-columns: minmax(0, 1fr) 14rem;
+      align-items: start;
+      gap: 2.5rem;
+    }
+  }
+
+  .post-header {
+    grid-area: header;
+  }
+
+  .prose-content {
+    grid-area: body;
+  }
+
+  :global(.toc) {
+    grid-area: toc;
+  }
+
+  .prompt-prefix {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+  }
+
+  .meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--ink-500);
+    margin-top: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin-top: 1rem;
+    padding: 0;
+  }
+
+</style>

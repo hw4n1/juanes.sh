@@ -1,0 +1,359 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TagPill from '../components/TagPill.astro';
+import { SOCIAL_LINKS, CV_URL } from '../consts';
+
+const expertise = ['appsec', 'devsecops', 'pentesting', 'kernel', 'networking', 'ipv6', 'tor', 'homelab'];
+
+const experience = [
+  {
+    role: 'Application Security / Security QA Engineer',
+    org: 'B2Gnow (via Insight Global)',
+    place: 'Phoenix, AZ — remote',
+    dates: '2026 – present',
+    summary:
+      'Data-path and sensitive-data security for eComply, a U.S. government compliance platform (legacy ASP.NET MVC).',
+    bullets: [
+      "Mapped system architecture and data flows across 1,500+ endpoints to build the platform's first inventory of sensitive-data entry points and risk exposure — from a codebase with near-zero documentation.",
+      'Designed an automated authorization-sweep approach to validate access control (IDOR, privilege escalation, broken authZ) at scale, surfacing the highest-impact risks across all endpoints rather than one at a time.',
+      'Built automated security test suites for critical data paths and integrated them into CI/CD pipelines, enabling continuous validation of authentication, authorization, and session-management controls.',
+      'Performed negative security testing to confirm no sensitive data leaks through logs, API responses, or error messages.',
+    ],
+  },
+  {
+    role: 'Test Automation Engineer',
+    org: 'Globant',
+    place: 'Bogotá — hybrid',
+    dates: '2025 – 2026',
+    summary: 'Qiddiya program — large-scale Web / Mobile / API quality automation.',
+    bullets: [
+      'Built cross-platform automation frameworks (Playwright, Appium, Cucumber) for Web, Mobile, and API, reaching 90% automated coverage on critical business flows.',
+      'Integrated automation suites into GitLab CI/CD pipelines, shortening feedback loops and improving release reliability.',
+      'Applied a shift-left approach, analyzing system architecture early to surface failure points before release; contributed to an internal AI-powered testing agent.',
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="About"
+  description="Bio of Juan Esteban Muñoz Díaz (Juanes): application security engineer, self-built offensive lab, and ASN/IPv6 project via LACNIC."
+  canonicalURL={new URL('/about/', Astro.site)}
+>
+  <article class="about measure">
+    <header>
+      <p class="prompt-prefix" aria-hidden="true">$ cat about.md</p>
+      <h1>Juan Esteban Muñoz Díaz</h1>
+      <p class="subtitle">Application Security Engineer · Security Automation & AppSec Testing — "Juanes"</p>
+      <a class="cv-link" href={CV_URL} target="_blank" rel="noopener">↓ download CV (PDF)</a>
+    </header>
+
+    <section>
+      <p>
+        Application security engineer focused on securing APIs and data paths through automated security testing
+        and CI/CD integration. I come from large-scale test automation, plus my own research into offensive
+        security and Linux internals — the same attacker's mindset applied to building security guardrails that
+        development teams actually use.
+      </p>
+    </section>
+
+    <section>
+      <h2>$ cat experience.md</h2>
+      <div class="experience-list">
+        {
+          experience.map((job) => (
+            <article class="job">
+              <div class="job-head">
+                <h3>{job.role}</h3>
+                <p class="job-dates">{job.dates}</p>
+              </div>
+              <p class="job-org">
+                {job.org} <span aria-hidden="true">·</span> {job.place}
+              </p>
+              <p class="job-summary">{job.summary}</p>
+              <ul>
+                {job.bullets.map((bullet) => <li>{bullet}</li>)}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section>
+      <h2>$ cat lab.md</h2>
+      <p>
+        My personal lab is where I practice the offensive depth I later apply to AppSec — it's not a demo, it's real
+        infrastructure I keep running in production for myself. It runs on a two-node <strong>Proxmox</strong>{' '}
+        cluster with real quorum via a Raspberry Pi as a QDevice
+        (<a href="/blog/the-qdevice-that-wouldnt-vote/">see the post</a>).
+      </p>
+      <ul class="lab-list">
+        <li>
+          <strong>Offensive research:</strong> Linux kernel-module development in C (syscall-table manipulation, CR0
+          write-protection bypass, syscall hooking, covert C2 over Netfilter). M.S. thesis on rootkit detection via
+          kernel-level entropy analysis.
+        </li>
+        <li>
+          <strong>Hands-on practice:</strong> continuous offensive-security practice on Hack The Box (web
+          exploitation, network attacks, privilege escalation) with an ongoing weekly streak.
+        </li>
+        <li>
+          <strong>Network & infrastructure:</strong> five-VLAN segmented architecture on RouterOS with independent{' '}
+          <strong>IPv6</strong> via <strong>LACNIC</strong>; Tor relays and obfs4 bridges; OpenVPN/WireGuard.
+        </li>
+        <li>
+          <strong>Defensive operations:</strong> honeypots (Cowrie, Dionaea, Conpot), a MISP threat-intelligence
+          pipeline, and Wazuh SIEM monitoring in an isolated sandbox.
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>$ cat asn.md</h2>
+      <p>
+        In parallel, I'm getting my own <strong>ASN</strong> via <strong>LACNIC</strong> to operate as an
+        independent autonomous system. The goal: stop depending on other people's infrastructure to serve what I
+        build, and write about the process end to end — BGP included.
+      </p>
+    </section>
+
+    <section>
+      <h2>$ cat education.md</h2>
+      <ul class="education-list">
+        <li>
+          <p class="edu-title">M.S. in Information Security <span class="edu-dates">in progress · 2026–2027</span></p>
+          <p class="edu-org">Universidad de los Andes, Bogotá</p>
+          <p>
+            Offensive and defensive security: cloud security, network defense, cryptography, secure programming,
+            digital forensics. Thesis: Linux rootkit detection via information theory.
+          </p>
+        </li>
+        <li>
+          <p class="edu-title">B.S. in Systems Engineering <span class="edu-dates">2022–2025</span></p>
+          <p class="edu-org">Pontificia Universidad Javeriana, Bogotá</p>
+          <p>
+            Strong foundation in networks, operating systems, and security. Teaching assistant (OS, data structures,
+            advanced programming); Vice-Chair of IEEE Javeriana (Best Student Branch in Colombia).
+          </p>
+        </li>
+      </ul>
+      <p class="certs">
+        <strong>Certifications:</strong> eJPT (eLearnSecurity Junior Penetration Tester, 2025) · ISC2 CC (Certified
+        in Cybersecurity) · INE CCA (Certified Cloud Associate) · Google Cloud Digital Leader.
+      </p>
+    </section>
+
+    <section>
+      <h2>$ ls expertise/</h2>
+      <ul class="expertise-list">
+        {expertise.map((tag) => <li><TagPill tag={tag} static /></li>)}
+      </ul>
+    </section>
+
+    <section>
+      <h2>$ cat recognition.md</h2>
+      <ul class="recognition-list">
+        <li>1st place in Colombia — IEEEXtreme 18 Programming Competition (2024).</li>
+        <li>2nd place — CyberWings cybersecurity competition, Colombian Air Force.</li>
+        <li>Judge — VEX Robotics World Championship, Dallas, USA.</li>
+        <li>Founded chapters and led technical teams of 30+ members across IEEE Javeriana and IEEE Uniandes.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>$ cat talks.md</h2>
+      <p class="muted">
+        No public talks yet. The goal is to make it to DEF CON — this space will get updated when it happens.
+      </p>
+    </section>
+
+    <section>
+      <h2>$ cat contact.md</h2>
+      <ul class="contact-list">
+        {
+          SOCIAL_LINKS.map((link) => (
+            <li>
+              <a href={link.url} rel="me noopener noreferrer" target="_blank">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .about {
+    margin: 0 auto;
+    padding: 3rem 1.25rem 4rem;
+  }
+
+  .prompt-prefix {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+  }
+
+  .subtitle {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--ink-500);
+    margin-top: 0.6rem;
+  }
+
+  .cv-link {
+    display: inline-block;
+    margin-top: 1.1rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    border: 1px solid var(--border);
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    text-decoration: none;
+  }
+
+  .cv-link:hover {
+    border-color: var(--accent);
+  }
+
+  section {
+    margin-top: 2.4rem;
+  }
+
+  section h2 {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    font-weight: 500;
+    color: var(--ink-700);
+    margin-bottom: 0.75rem;
+  }
+
+  section h3 {
+    font-size: var(--text-lg);
+  }
+
+  section p {
+    color: var(--ink-900);
+    line-height: 1.7;
+  }
+
+  section p a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  .muted {
+    color: var(--ink-500);
+  }
+
+  .expertise-list,
+  .contact-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    list-style: none;
+    padding: 0;
+  }
+
+  .contact-list {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  .contact-list a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  .experience-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .job-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .job-dates,
+  .edu-dates {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--ink-500);
+  }
+
+  .job-org {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--ink-700);
+    margin-top: 0.3rem;
+  }
+
+  .job-summary {
+    margin-top: 0.6rem;
+    color: var(--ink-700);
+  }
+
+  .job ul {
+    margin-top: 0.85rem;
+    padding-left: 1.3em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .lab-list,
+  .recognition-list {
+    margin-top: 1rem;
+    padding-left: 1.3em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    color: var(--ink-900);
+    line-height: 1.7;
+  }
+
+  .education-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .edu-title {
+    font-weight: 600;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: baseline;
+  }
+
+  .edu-org {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--ink-700);
+    margin-top: 0.2rem;
+  }
+
+  .certs {
+    margin-top: 1.25rem;
+    font-size: var(--text-sm);
+    color: var(--ink-700);
+  }
+</style>

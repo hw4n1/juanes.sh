@@ -1,0 +1,120 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+const toc = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+{
+  toc.length > 0 && (
+    <>
+      {/* Mobile/tablet: collapsed by default, native <details> disclosure, zero JS. */}
+      <details class="toc toc-mobile">
+        <summary class="toc-title">$ toc</summary>
+        <ul>
+          {toc.map((h) => (
+            <li class:list={[h.depth === 3 && 'nested']}>
+              <a href={`#${h.slug}`}>{h.text}</a>
+            </li>
+          ))}
+        </ul>
+      </details>
+
+      {/* Desktop: always-visible sticky sidebar — a plain nav, not collapsible. */}
+      <nav class="toc toc-desktop" aria-label="Table of contents">
+        <p class="toc-title">$ toc</p>
+        <ul>
+          {toc.map((h) => (
+            <li class:list={[h.depth === 3 && 'nested']}>
+              <a href={`#${h.slug}`}>{h.text}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </>
+  )
+}
+
+<style>
+  .toc {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  .toc-mobile {
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .toc-desktop {
+    display: none;
+  }
+
+  .toc-title {
+    color: var(--accent);
+    margin: 0;
+  }
+
+  .toc-mobile .toc-title {
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .toc-mobile .toc-title::-webkit-details-marker {
+    display: none;
+  }
+
+  .toc-mobile .toc-title::before {
+    content: '▸';
+    display: inline-block;
+    margin-right: 0.4em;
+  }
+
+  .toc-mobile[open] .toc-title::before {
+    content: '▾';
+  }
+
+  ul {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    border-left: 1px solid var(--border);
+  }
+
+  li {
+    padding-left: 0.85rem;
+  }
+
+  li.nested {
+    padding-left: 1.7rem;
+  }
+
+  a {
+    color: var(--ink-700);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--accent);
+  }
+
+  @media (min-width: 64rem) {
+    .toc-mobile {
+      display: none;
+    }
+
+    .toc-desktop {
+      display: block;
+      position: sticky;
+      top: 6rem;
+    }
+  }
+</style>

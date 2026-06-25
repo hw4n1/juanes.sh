@@ -1,0 +1,95 @@
+---
+import PromptLogo from './PromptLogo.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+const navItems = [
+  { href: '/', label: 'home' },
+  { href: '/blog/', label: 'blog' },
+  { href: '/about/', label: 'about' },
+];
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<header class="site-header">
+  <div class="inner">
+    <a href="/" class="logo-link" aria-label="juanes.sh — home">
+      <PromptLogo />
+    </a>
+
+    <nav aria-label="Main navigation">
+      <ul>
+        {
+          navItems.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+                <span class="indicator" aria-hidden="true">{isActive(item.href) ? '›' : ''}</span>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <ThemeToggle />
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .inner {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+  }
+
+  .logo-link {
+    text-decoration: none;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.85rem 1.5rem;
+  }
+
+  nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1.1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  nav a {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--ink-700);
+    text-decoration: none;
+  }
+
+  nav a:hover {
+    color: var(--accent);
+  }
+
+  nav a[aria-current='page'] {
+    color: var(--ink-900);
+  }
+
+  .indicator {
+    color: var(--accent);
+    margin-right: 0.15em;
+  }
+</style>

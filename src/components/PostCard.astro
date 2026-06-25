@@ -1,0 +1,79 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import TagPill from './TagPill.astro';
+import { readingTime } from '../utils/readingTime';
+import { formatDate } from '../utils/date';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, tags, lang } = post.data;
+const formattedDate = formatDate(pubDate, lang, { year: 'numeric', month: 'short', day: '2-digit' });
+---
+
+<article class="post-card">
+  <a href={`/blog/${post.id}/`} class="title-link">
+    <h2>{title}</h2>
+  </a>
+  <p class="meta">
+    <time datetime={pubDate.toISOString()}>{formattedDate}</time>
+    <span aria-hidden="true">·</span>
+    <span>{readingTime(post.body ?? '', lang)}</span>
+  </p>
+  <p class="description">{description}</p>
+  {
+    tags.length > 0 && (
+      <ul class="tags">
+        {tags.map((tag) => (
+          <li><TagPill tag={tag} /></li>
+        ))}
+      </ul>
+    )
+  }
+</article>
+
+<style>
+  .post-card {
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .title-link {
+    text-decoration: none;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    color: var(--ink-900);
+  }
+
+  .title-link:hover h2 {
+    color: var(--accent);
+  }
+
+  .meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--ink-500);
+    margin-top: 0.4rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .description {
+    margin-top: 0.6rem;
+    color: var(--ink-700);
+    max-width: 65ch;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin-top: 0.85rem;
+    padding: 0;
+  }
+</style>

@@ -1,0 +1,22 @@
+---
+import { render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { getPublishedPosts } from '../../utils/posts';
+import { canonicalForPost } from '../../utils/seo';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const canonicalURL = canonicalForPost(post, Astro.site!);
+---
+
+<PostLayout post={post} headings={headings} canonicalURL={canonicalURL}>
+  <Content />
+</PostLayout>
