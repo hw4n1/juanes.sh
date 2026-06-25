@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostCard from '../../../components/PostCard.astro';
+import { getPublishedPosts } from '../../../utils/posts';
+import type { CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
+
+  return tags.map((tag) => ({
+    params: { tag },
+    props: { posts: posts.filter((post) => post.data.tags.includes(tag)) },
+  }));
+}
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<BaseLayout
+  title={`#${tag}`}
+  description={`Posts tagged #${tag} on juanes.sh.`}
+  canonicalURL={new URL(`/blog/tag/${tag}/`, Astro.site)}
+>
+  <section class="tag-index">
+    <header>
+      <p class="prompt-prefix" aria-hidden="true">$ grep -l '#{tag}' posts/*</p>
+      <h1>#{tag}</h1>
+    </header>
+    <div class="post-list">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+    <a class="back-link" href="/blog/">← all posts</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .tag-index {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 3rem 1.25rem 4rem;
+  }
+
+  .prompt-prefix {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+    margin-bottom: 1.5rem;
+    font-family: var(--font-mono);
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 2rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--accent);
+  }
+</style>

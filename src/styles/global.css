@@ -1,0 +1,250 @@
+@import 'tailwindcss';
+
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+@import '@fontsource/jetbrains-mono/700.css';
+@import '@fontsource-variable/public-sans';
+
+/*
+ * Semantic tokens: change value between :root and [data-theme="dark"].
+ * --brand-accent is the only exception: fixed in both modes for brand
+ * consistency (logo, cursor, tag borders).
+ */
+:root {
+  color-scheme: light;
+
+  --brand-accent: #1d9e75;
+
+  --bg: #f7f7f5;
+  --bg-elevated: #ffffff;
+  --ink-900: #14171a;
+  --ink-700: #51565c;
+  --ink-500: #686c70;
+  --border: #e3e4e1;
+  --code-bg: #eef0ec;
+  --accent: #127355;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #0e1110;
+  --bg-elevated: #161a18;
+  --ink-900: #e9edea;
+  --ink-700: #a9b0ac;
+  --ink-500: #838a86;
+  --border: #262b28;
+  --code-bg: #111513;
+  --accent: #2ec192;
+}
+
+/* Tailwind v4: static tokens (typography/scale) + indirection to the
+   semantic variables above so utilities follow the active theme. */
+@theme {
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-sans: 'Public Sans Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.4;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.5;
+  --text-base: 1.125rem;
+  --text-base--line-height: 1.7;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.6;
+  --text-xl: 1.5rem;
+  --text-xl--line-height: 1.35;
+  --text-2xl: 1.875rem;
+  --text-2xl--line-height: 1.25;
+  --text-3xl: 2.5rem;
+  --text-3xl--line-height: 1.15;
+  --text-4xl: 3rem;
+  --text-4xl--line-height: 1.1;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-ink-900: var(--ink-900);
+  --color-ink-700: var(--ink-700);
+  --color-ink-500: var(--ink-500);
+  --color-border: var(--border);
+  --color-code-bg: var(--code-bg);
+  --color-accent: var(--accent);
+  --color-brand-accent: var(--brand-accent);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    background: var(--bg);
+    color-scheme: light dark;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink-900);
+    font-family: var(--font-sans);
+    font-feature-settings: 'kern' 1, 'liga' 1;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-sans);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--ink-900);
+  }
+
+  code,
+  pre,
+  kbd {
+    font-family: var(--font-mono);
+  }
+
+  a {
+    color: inherit;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--brand-accent) 35%, transparent);
+  }
+}
+
+@layer components {
+  /* Reading measure for post/about prose */
+  .measure {
+    max-width: 70ch;
+  }
+
+  /* Mono label used for tags/badges across the visual identity */
+  .tag {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.02em;
+    text-transform: lowercase;
+  }
+
+  .prose-content {
+    max-width: 70ch;
+    font-size: var(--text-base);
+    line-height: 1.7;
+    color: var(--ink-900);
+  }
+
+  .prose-content > * + * {
+    margin-top: 1.4em;
+  }
+
+  .prose-content h2,
+  .prose-content h3,
+  .prose-content h4 {
+    margin-top: 2.2em;
+    margin-bottom: 0.6em;
+    scroll-margin-top: 6rem;
+  }
+
+  .prose-content h2 {
+    font-size: var(--text-2xl);
+  }
+
+  .prose-content h3 {
+    font-size: var(--text-xl);
+  }
+
+  .prose-content p {
+    color: var(--ink-900);
+  }
+
+  .prose-content a {
+    color: var(--accent);
+    text-decoration-line: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    text-underline-offset: 0.15em;
+  }
+
+  .prose-content a:hover {
+    text-decoration-color: var(--accent);
+  }
+
+  .prose-content :not(pre) > code {
+    background: var(--code-bg);
+    color: var(--ink-900);
+    font-size: 0.875em;
+    padding: 0.15em 0.4em;
+    border-radius: 0.25rem;
+  }
+
+  .prose-content pre {
+    position: relative;
+    padding: 1.1rem 1.25rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    overflow-x: auto;
+    font-size: 0.875em;
+    line-height: 1.6;
+  }
+
+  .copy-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--ink-700);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .prose-content pre:hover .copy-button,
+  .copy-button:focus-visible {
+    opacity: 1;
+  }
+
+  .copy-button:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .prose-content ul,
+  .prose-content ol {
+    padding-left: 1.4em;
+  }
+
+  .prose-content li + li {
+    margin-top: 0.4em;
+  }
+
+  .prose-content blockquote {
+    border-left: 2px solid var(--brand-accent);
+    padding-left: 1rem;
+    color: var(--ink-700);
+  }
+
+  .prose-content img {
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+  }
+}
+
+/* Shiki dual-theme: switch via [data-theme] instead of the media query
+   Shiki uses by default, so it follows the manual toggle. */
+[data-theme='dark'] .astro-code,
+[data-theme='dark'] .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
