@@ -275,7 +275,7 @@ Set the unit to **Duration (s)** in Grafana and it converts automatically to "X 
 
 Here's what the final Cluster Overview dashboard looks like with all three nodes being monitored:
 
-![Grafana Cluster Overview dashboard showing CPU usage time series for 3 nodes, RAM and Disk gauges, and uptime stats](./dashboard-cluster-overview.png)
+![Grafana Cluster Overview dashboard showing CPU usage time series for 3 nodes, RAM and Disk gauges, and uptime stats](/images/blog/building-an-observability-stack/dashboard-cluster-overview.png)
 
 CPU usage as a time series so you can spot trends and spikes, RAM and disk as gauges with color thresholds so you know at a glance if something needs attention, and uptime as a stat panel per node. The Pi's disk at 59.7% is the first one that will trigger the disk alert if it keeps growing.
 
@@ -285,7 +285,7 @@ CPU usage as a time series so you can spot trends and spikes, RAM and disk as ga
 
 And here's Prometheus confirming all 4 targets are up — 3 node_exporter instances plus itself:
 
-![Prometheus Status > Target Health showing node_exporter 3/3 up and prometheus 1/1 up](./prometheus-targets.png)
+![Prometheus Status > Target Health showing node_exporter 3/3 up and prometheus 1/1 up](/images/blog/building-an-observability-stack/prometheus-targets.png)
 
 ---
 
@@ -311,7 +311,7 @@ The 5-minute pending period is not a delay — it's a filter. A RAM spike during
 
 Here's what a real alert looks like in Discord — this one fired when the Pi's disk crossed 80%, then resolved automatically after I lowered the threshold back:
 
-![Discord showing a Grafana alert firing for Disco Alto - Cluster on the Pi's /dev/mmcblk0p1, then resolving](./discord-alert-firing.png)
+![Discord showing a Grafana alert firing for Disco Alto - Cluster on the Pi's /dev/mmcblk0p1, then resolving](/images/blog/building-an-observability-stack/discord-alert-firing.png)
 
 Note the `Resolved` message below — Grafana automatically sends a resolution notification when the condition clears. You get the full lifecycle: firing, context (which node, which device, which filesystem), and resolution. No manual cleanup needed.
 
