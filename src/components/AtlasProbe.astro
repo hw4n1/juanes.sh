@@ -1,0 +1,187 @@
+---
+/**
+ * Status of my RIPE Atlas probe, resolved at build time.
+ * Public v2 API, no key: https://atlas.ripe.net/docs/apis/rest-api-reference/probes/
+ */
+import { fetchJson } from '../lib/fetch-json';
+
+interface Props {
+  probeId?: number;
+}
+
+const { probeId = 1016413 } = Astro.props;
+
+// v2 returns `status` as an {id, name, since} object, but some clients see it
+// as a plain string. Handled defensively either way.
+interface AtlasProbe {
+  id: number;
+  is_public?: boolean;
+  country_code?: string;
+  asn_v4?: number | null;
+  asn_v6?: number | null;
+  first_connected?: number | null;
+  total_uptime?: number | null;
+  status?: string | { id?: number; name?: string; since?: string } | null;
+}
+
+const probe = await fetchJson<AtlasProbe>(`https://atlas.ripe.net/api/v2/probes/${probeId}/`);
+
+const statusName = typeof probe?.status === 'string' ? probe.status : (probe?.status?.name ?? 'unknown');
+
+const isConnected = statusName.toLowerCase() === 'connected';
+
+const uptimeDays = probe?.total_uptime != null ? Math.floor(probe.total_uptime / 86_400) : null;
+
+const since =
+  probe?.first_connected != null ? new Date(probe.first_connected * 1000).toISOString().slice(0, 10) : null;
+
+const asn = probe?.asn_v4 ?? probe?.asn_v6 ?? null;
+
+const network = [asn ? `AS${asn}` : null, probe?.country_code].filter(Boolean).join(' · ');
+
+const probeUrl = `https://atlas.ripe.net/probes/${probeId}/`;
+---
+
+<section class="probe" aria-labelledby={`atlas-${probeId}`}>
+  <h2 class="cmd" id={`atlas-${probeId}`}>
+    <span class="prompt" aria-hidden="true">$</span> atlas probe --id {probeId}
+  </h2>
+
+  <p class="note">
+    A RIPE Atlas probe on my network, feeding latency, DNS and traceroute measurements to the global measurement
+    infrastructure researchers and operators build on.
+  </p>
+
+  {
+    probe ? (
+      <dl class="out">
+        <dt>status</dt>
+        <dd>
+          <span class:list={['status', { up: isConnected }]}>{statusName.toLowerCase()}</span>
+        </dd>
+
+        {uptimeDays !== null && (
+          <>
+            <dt>uptime</dt>
+            <dd>{uptimeDays}d</dd>
+          </>
+        )}
+
+        {network && (
+          <>
+            <dt>network</dt>
+            <dd>{network}</dd>
+          </>
+        )}
+
+        {since && (
+          <>
+            <dt>since</dt>
+            <dd>
+              <time datetime={since}>{since}</time>
+            </dd>
+          </>
+        )}
+      </dl>
+    ) : (
+      <p class="fallback">
+        Couldn't reach the RIPE Atlas API on the last build.{' '}
+        <a href={probeUrl} rel="noopener">
+          See the probe on atlas.ripe.net
+        </a>
+      </p>
+    )
+  }
+
+  <p class="src">
+    <a href={probeUrl} rel="noopener">atlas.ripe.net/probes/{probeId}</a>
+  </p>
+</section>
+
+<style>
+  .probe {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+  }
+
+  .cmd {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: normal;
+    color: var(--ink-900);
+  }
+
+  .prompt {
+    color: var(--accent);
+  }
+
+  .note {
+    margin: 0 0 1rem;
+    max-width: 62ch;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--ink-500);
+  }
+
+  .out {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 0.15rem 1rem;
+    margin: 0;
+  }
+
+  dt {
+    color: var(--ink-500);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--ink-900);
+  }
+
+  .status::before {
+    content: '●';
+    margin-right: 0.5ch;
+    color: var(--ink-500);
+  }
+
+  .status.up::before {
+    color: var(--accent);
+  }
+
+  .fallback {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--ink-500);
+  }
+
+  .src {
+    margin: 0.75rem 0 0;
+    font-size: var(--text-xs);
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    text-underline-offset: 0.25em;
+  }
+
+  a:hover {
+    text-decoration-color: var(--accent);
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 30rem) {
+    .out {
+      grid-template-columns: 5rem 1fr;
+    }
+  }
+</style>
