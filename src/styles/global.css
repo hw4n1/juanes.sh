@@ -23,6 +23,10 @@
   --border: #e3e4e1;
   --code-bg: #eef0ec;
   --accent: #127355;
+  /* Anomaly/blocked state. Deliberately not the accent: painting a confirmed
+     block in the "all good" green would be lying with the design. Tuned to
+     ~the same contrast as --accent so it reads as a sibling, not an alarm. */
+  --warn: #9a5000;
 }
 
 [data-theme='dark'] {
@@ -36,6 +40,7 @@
   --border: #262b28;
   --code-bg: #111513;
   --accent: #2ec192;
+  --warn: #e0a45c;
 }
 
 /* Tailwind v4: static tokens (typography/scale) + indirection to the
@@ -71,6 +76,7 @@
   --color-border: var(--border);
   --color-code-bg: var(--code-bg);
   --color-accent: var(--accent);
+  --color-warn: var(--warn);
   --color-brand-accent: var(--brand-accent);
 }
 
@@ -147,7 +153,38 @@
   .prose-content h4 {
     margin-top: 2.2em;
     margin-bottom: 0.6em;
-    scroll-margin-top: 6rem;
+    /* Breathing room when jumping to an anchor. The header isn't sticky, so
+       this only needs to clear the viewport edge, not a fixed bar. */
+    scroll-margin-top: 2rem;
+  }
+
+  /* Permalink anchor appended to each heading by the rehype plugin in
+     astro.config.mjs. Quiet until you hover the heading, always visible on
+     keyboard focus, and never hidden on touch (where there is no hover). */
+  .heading-anchor {
+    margin-left: 0.4ch;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 400;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .prose-content :is(h2, h3, h4):hover .heading-anchor,
+  .heading-anchor:focus-visible {
+    opacity: 1;
+  }
+
+  .heading-anchor:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 0.2rem;
+  }
+
+  @media (hover: none) {
+    .heading-anchor {
+      opacity: 0.55;
+    }
   }
 
   .prose-content h2 {
@@ -235,6 +272,18 @@
   .prose-content img {
     border-radius: 0.5rem;
     border: 1px solid var(--border);
+  }
+}
+
+/* Honour reduced-motion globally rather than per-component. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

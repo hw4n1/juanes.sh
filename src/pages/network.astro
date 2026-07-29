@@ -1,0 +1,87 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AtlasProbe from '../components/AtlasProbe.astro';
+import OoniNetwork from '../components/OoniNetwork.astro';
+---
+
+<BaseLayout
+  title="Network"
+  description="Public infrastructure I contribute to: a Tor middle relay, a RIPE Atlas probe, and OONI Probe measurements from Colombia."
+  canonicalURL={new URL('/network/', Astro.site)}
+>
+  <div class="page">
+    <header class="page-header measure">
+      <p class="prompt-prefix" aria-hidden="true">$ cat network.md</p>
+      <h1>Network</h1>
+      <p class="lead">
+        Infrastructure I run that other people depend on, not just me. Nothing here is a claim about my skills —
+        it's capacity handed to public networks, and it can be verified from the outside.
+      </p>
+      <p class="body">
+        I also run a <strong>Tor middle relay</strong>: it forwards traffic inside the network without being an
+        entry or exit point. Relay identifiers aren't published here on purpose — a middle relay contributes
+        bandwidth, not a public profile.
+      </p>
+    </header>
+
+    <div class="panels">
+      <AtlasProbe probeId={1016413} />
+      <OoniNetwork asn="AS3816" cc="CO" />
+    </div>
+
+    <p class="freshness measure">
+      All figures on this page are resolved at build time — no client-side JavaScript, no third-party widgets, no
+      requests leaving your browser. The site rebuilds once a day, so readings can be up to 24 hours old.
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .page {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 3rem 1.25rem 4rem;
+  }
+
+  .prompt-prefix {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+  }
+
+  .lead {
+    margin-top: 1.1rem;
+    font-size: var(--text-lg);
+    color: var(--ink-700);
+  }
+
+  .body {
+    margin-top: 1.1rem;
+    color: var(--ink-900);
+    line-height: 1.7;
+  }
+
+  .panels {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panels > :global(section) {
+    border-top: 1px solid var(--border);
+    padding-block: 1.75rem;
+  }
+
+  .freshness {
+    margin-top: 2rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--border);
+    font-size: var(--text-sm);
+    color: var(--ink-500);
+  }
+</style>

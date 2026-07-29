@@ -1,0 +1,200 @@
+---
+/**
+ * OONI censorship measurements on the network I run OONI Probe from.
+ *
+ * MIND THE FRAMING (this is not cosmetic):
+ * OONI does not index by IP or by individual probe — it filters by ASN and
+ * country. AS3816 is Colombia Telecomunicaciones (Movistar), with millions of
+ * customers, so THESE ARE NOT "MY MEASUREMENTS": they are the whole network's.
+ * The component copy says so explicitly. Do not change it to "my measurements"
+ * without changing the data source first.
+ *
+ * To make them genuinely mine some day, we would have to store the
+ * measurement_uid of my own runs and list those from the repo.
+ *
+ * Response shape verified against the live API on 2026-07-28:
+ *   {metadata: {...}, results: [{anomaly, confirmed, failure, input, test_name,
+ *    measurement_start_time, measurement_uid, scores, ...}]}
+ * Note `metadata.count` comes back as -1 (the API does not count), so there is
+ * no total to display.
+ */
+import { fetchJson } from '../lib/fetch-json';
+
+interface Props {
+  asn?: string;
+  cc?: string;
+  limit?: number;
+}
+
+const { asn = 'AS3816', cc = 'CO', limit = 6 } = Astro.props;
+
+interface OoniMeasurement {
+  measurement_uid?: string;
+  input?: string | null;
+  test_name?: string;
+  measurement_start_time?: string;
+  anomaly?: boolean;
+  confirmed?: boolean;
+  failure?: boolean;
+}
+
+const api = `https://api.ooni.io/api/v1/measurements?probe_asn=${asn}&probe_cc=${cc}&limit=${limit}&order=desc`;
+const data = await fetchJson<{ results?: OoniMeasurement[] }>(api);
+const results = data?.results ?? [];
+
+const explorerUrl = `https://explorer.ooni.org/search?probe_asn=${asn}&probe_cc=${cc}`;
+
+function verdict(m: OoniMeasurement): { label: string; kind: 'blocked' | 'anomaly' | 'ok' | 'error' } {
+  if (m.confirmed) return { label: 'confirmed', kind: 'blocked' };
+  if (m.failure) return { label: 'failed', kind: 'error' };
+  if (m.anomaly) return { label: 'anomaly', kind: 'anomaly' };
+  return { label: 'ok', kind: 'ok' };
+}
+
+function target(m: OoniMeasurement): string {
+  if (!m.input) return m.test_name ?? '—';
+  return m.input.replace(/^https?:\/\//, '').replace(/\/$/, '');
+}
+---
+
+<section class="ooni" aria-labelledby="ooni-heading">
+  <h2 class="cmd" id="ooni-heading">
+    <span class="prompt" aria-hidden="true">$</span> ooni search --asn {asn} --cc {cc}
+  </h2>
+
+  <p class="note">
+    Censorship measurements published from <strong>{asn}</strong> (Colombia Telecomunicaciones), the network I run
+    OONI&nbsp;Probe on. These belong to the whole network, not just to me: OONI publishes by ASN, not by individual
+    probe.
+  </p>
+
+  {
+    results.length > 0 ? (
+      <ul class="list">
+        {results.map((m) => {
+          const v = verdict(m);
+          const date = m.measurement_start_time?.slice(0, 10);
+          return (
+            <li>
+              <span class:list={['verdict', v.kind]}>{v.label}</span>
+              <span class="target">{target(m)}</span>
+              {date && (
+                <time class="date" datetime={date}>
+                  {date}
+                </time>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    ) : (
+      <p class="note fallback">Couldn't reach the OONI API on the last build.</p>
+    )
+  }
+
+  <p class="src">
+    <a href={explorerUrl} rel="noopener">See all on OONI Explorer</a>
+  </p>
+</section>
+
+<style>
+  .ooni {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+  }
+
+  .cmd {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: normal;
+    color: var(--ink-900);
+  }
+
+  .prompt {
+    color: var(--accent);
+  }
+
+  .note {
+    margin: 0 0 1rem;
+    max-width: 62ch;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--ink-500);
+  }
+
+  .fallback {
+    margin: 0;
+  }
+
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .list li {
+    display: grid;
+    grid-template-columns: 6rem 1fr auto;
+    gap: 1rem;
+    align-items: baseline;
+  }
+
+  .verdict {
+    color: var(--ink-500);
+  }
+
+  .verdict.ok {
+    color: var(--accent);
+  }
+
+  .verdict.anomaly,
+  .verdict.blocked {
+    color: var(--warn);
+  }
+
+  .target {
+    color: var(--ink-900);
+    overflow-wrap: anywhere;
+  }
+
+  .date {
+    color: var(--ink-500);
+    font-size: var(--text-xs);
+  }
+
+  .src {
+    margin: 1rem 0 0;
+    font-size: var(--text-xs);
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    text-underline-offset: 0.25em;
+  }
+
+  a:hover {
+    text-decoration-color: var(--accent);
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 34rem) {
+    .list li {
+      grid-template-columns: 5.5rem 1fr;
+    }
+
+    .date {
+      grid-column: 2;
+    }
+  }
+</style>

@@ -1,0 +1,196 @@
+---
+/**
+ * Curated selection of GitHub repos, resolved at build time.
+ *
+ * IMPORTANT DESIGN DECISION:
+ * The description shown comes from `blurb` (written by hand below), and only
+ * falls back to the GitHub description when there is no blurb. That is
+ * deliberate: several repos have no description on GitHub today, and this way
+ * the component still looks right. Once those descriptions are fixed upstream,
+ * the blurbs can be deleted and the component keeps working.
+ *
+ * Curating by hand > listing everything. The hand-ordered array IS the section;
+ * the API only contributes language, stars and last-push date.
+ *
+ * Repos that don't exist yet (e.g. dotfiles) are skipped silently, without
+ * breaking anything — so the entry can sit here ready in advance.
+ */
+import { fetchJson } from '../lib/fetch-json';
+
+interface Props {
+  user?: string;
+}
+
+const { user = 'hw4n1' } = Astro.props;
+
+/** The order of this array is the order on the page. */
+const PICKS: { repo: string; blurb?: string }[] = [
+  {
+    repo: 'Linux-Kernel-Loadable-Module-LKM-Rootkit',
+    blurb:
+      'Proof-of-concept Linux kernel-module rootkit: sys_call_table hooking to hide processes, files and modules. Written to understand the technique from the defensive side.',
+  },
+  {
+    repo: 'apple-passkit-lib',
+    blurb: 'Go library for generating and signing Apple Wallet passes (PassKit).',
+  },
+  {
+    // Not published yet: the entry stays here and the component ignores it
+    // until the repo exists.
+    repo: 'dotfiles',
+    blurb:
+      'My Debian 13 environment for bug bounty, security and development work: shell, tooling and reproducible configuration.',
+  },
+];
+
+interface GitHubRepo {
+  name: string;
+  html_url: string;
+  description: string | null;
+  language: string | null;
+  stargazers_count: number;
+  pushed_at: string;
+  fork: boolean;
+  archived: boolean;
+}
+
+/**
+ * One request for every repo instead of one per repo: the unauthenticated rate
+ * limit is 60/hour per IP, and Cloudflare's builders go out through shared IPs.
+ * With GITHUB_TOKEN it goes up to 5,000/h. The token needs no scopes at all:
+ * it only reads public data.
+ */
+const token = import.meta.env.GITHUB_TOKEN;
+
+const repos = await fetchJson<GitHubRepo[]>(`https://api.github.com/users/${user}/repos?per_page=100&sort=updated`, {
+  headers: {
+    accept: 'application/vnd.github+json',
+    ...(token ? { authorization: `Bearer ${token}` } : {}),
+  },
+});
+
+const byName = new Map((repos ?? []).map((r) => [r.name.toLowerCase(), r]));
+
+const selected = PICKS.map((pick) => {
+  const data = byName.get(pick.repo.toLowerCase());
+  if (!data) return null; // doesn't exist yet, or the API call failed
+  return {
+    name: data.name,
+    url: data.html_url,
+    text: pick.blurb ?? data.description ?? null,
+    language: data.language,
+    stars: data.stargazers_count,
+    updated: data.pushed_at?.slice(0, 7) ?? null,
+  };
+}).filter((r): r is NonNullable<typeof r> => r !== null);
+
+const profileUrl = `https://github.com/${user}`;
+---
+
+{
+  selected.length > 0 && (
+    <section class="repos" aria-labelledby="gh-heading">
+      <h2 class="cmd" id="gh-heading">
+        <span class="prompt" aria-hidden="true">
+          $
+        </span>{' '}
+        gh repo list {user} --selected
+      </h2>
+
+      <ul class="list">
+        {selected.map((r) => (
+          <li>
+            <a class="name" href={r.url} rel="noopener">
+              {r.name}
+            </a>
+            {r.text && <p class="desc">{r.text}</p>}
+            <p class="meta">
+              {r.language && <span>{r.language}</span>}
+              {/* Showing "0" stars is worse than showing nothing. */}
+              {r.stars > 0 && <span>★ {r.stars}</span>}
+              {r.updated && <span>updated {r.updated}</span>}
+            </p>
+          </li>
+        ))}
+      </ul>
+
+      <p class="src">
+        <a href={profileUrl} rel="noopener">
+          github.com/{user}
+        </a>
+      </p>
+    </section>
+  )
+}
+
+<style>
+  .repos {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+  }
+
+  .cmd {
+    margin: 0 0 1rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: normal;
+    color: var(--ink-900);
+  }
+
+  .prompt {
+    color: var(--accent);
+  }
+
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .name {
+    display: inline-block;
+    color: var(--accent);
+    overflow-wrap: anywhere;
+  }
+
+  .desc {
+    margin: 0.25rem 0 0;
+    max-width: 64ch;
+    font-family: var(--font-sans);
+    color: var(--ink-900);
+  }
+
+  .meta {
+    margin: 0.35rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.25rem;
+    font-size: var(--text-xs);
+    color: var(--ink-500);
+  }
+
+  .src {
+    margin: 1.25rem 0 0;
+    font-size: var(--text-xs);
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    text-underline-offset: 0.25em;
+  }
+
+  a:hover {
+    text-decoration-color: var(--accent);
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+</style>

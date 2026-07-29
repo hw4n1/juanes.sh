@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GithubRepos from '../components/GithubRepos.astro';
+---
+
+<BaseLayout
+  title="Projects"
+  description="A hand-picked selection of my public repositories: kernel-level offensive research, Go libraries, and tooling."
+  canonicalURL={new URL('/projects/', Astro.site)}
+>
+  <div class="page">
+    <header class="page-header measure">
+      <p class="prompt-prefix" aria-hidden="true">$ ls projects/</p>
+      <h1>Projects</h1>
+      <p class="lead">
+        A hand-picked selection, not everything I've pushed. Language, stars and last-push date come from the
+        GitHub API at build time; the descriptions are written here.
+      </p>
+    </header>
+
+    <div class="panels">
+      <GithubRepos user="hw4n1" />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 3rem 1.25rem 4rem;
+  }
+
+  .prompt-prefix {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+  }
+
+  .lead {
+    margin-top: 1.1rem;
+    font-size: var(--text-lg);
+    color: var(--ink-700);
+  }
+
+  .panels {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panels > :global(section) {
+    border-top: 1px solid var(--border);
+    padding-block: 1.75rem;
+  }
+</style>

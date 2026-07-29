@@ -23,6 +23,14 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
+# agent/assistant tooling — local only, never pushed
+AGENTS.md
+CLAUDE.md
+.claude/
+.cursor/
+.aider*
+.github/copilot-instructions.md
+
 # wrangler files
 .wrangler
 .dev.vars*

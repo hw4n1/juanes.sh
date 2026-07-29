@@ -4,7 +4,7 @@ Personal site + technical blog for Juan Esteban Muñoz Díaz ("Juanes"). Static 
 
 ## Stack
 
-- [Astro](https://astro.build) (`output: 'static'`, no adapter)
+- [Astro](https://astro.build) with the [`@astrojs/cloudflare`](https://docs.astro.build/en/guides/integrations-guide/cloudflare/) adapter — pages are prerendered at build time and served as static assets from a Worker
 - Content collections via the Content Layer API (`src/content.config.ts`) + schema validated with `zod`
 - Tailwind CSS v4 (CSS-first config in `src/styles/global.css`, no `tailwind.config.js`)
 - Self-hosted fonts: JetBrains Mono + Public Sans (via `@fontsource`, zero external requests)
@@ -62,21 +62,69 @@ PUBLIC_UMAMI_WEBSITE_ID=your-website-id
 
 Built for self-hosted [Umami](https://umami.is) or [Plausible](https://plausible.io). Without those variables, no third-party script loads at all.
 
-## Deploy to Cloudflare Pages
+## Deploy to Cloudflare Workers
 
-1. Connect the repo in Cloudflare Pages.
-2. Build command: `npm run build`
-3. Build output directory: `dist`
-4. Framework preset: Astro (or "None" + the values above)
-5. No Astro adapter is needed: the site is 100% static (`output: 'static'`).
+The site is deployed as a **Worker** (not Cloudflare Pages). `wrangler.jsonc` holds the config: the build output in `./dist` is served through the `ASSETS` binding.
 
-`public/_headers` already defines aggressive cache-control for hashed assets (`/_astro/*`) and a few basic security headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`); Cloudflare Pages picks it up automatically from the build root.
+- Build command: `npm run build`
+- Deploy: `npx wrangler deploy` (or `npm run deploy`, which builds first)
+- With the Git integration ([Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/)), a push to `main` builds and deploys on its own.
+
+`public/_headers` defines aggressive cache-control for hashed assets (`/_astro/*`) and a few basic security headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`).
 
 ## Pointing the juanes.sh domain
 
-In Cloudflare Pages → your project → **Custom domains** → add `juanes.sh` (and `www.juanes.sh` if you want it to redirect). If the domain is already on Cloudflare, validation is automatic; if not, Cloudflare will ask you to add the corresponding DNS records (usually a `CNAME` to `<project>.pages.dev`).
+In the Cloudflare dashboard → **Workers & Pages** → your Worker → **Settings** → **Domains & Routes** → add `juanes.sh` as a custom domain.
 
 This repo doesn't touch DNS or secrets — that part stays in the Cloudflare dashboard.
+
+## Build-time data and the scheduled rebuild
+
+`/network` and `/projects` resolve their data (RIPE Atlas, OONI, GitHub) **during the build**, so that no third-party request leaves the reader's browser: zero client-side JavaScript, zero tracking.
+
+The trade-off is that the data is frozen until the next deploy. A daily rebuild fixes that.
+
+### 1. Create the Deploy Hook
+
+Workers Builds supports [Deploy Hooks](https://developers.cloudflare.com/workers/ci-cd/builds/deploy-hooks/) — a URL that triggers a build when it gets an HTTP `POST`.
+
+1. Cloudflare dashboard → **Workers & Pages** → your Worker.
+2. **Settings** → **Builds** → **Deploy Hooks**.
+3. Give it a name (e.g. `daily-rebuild`), pick the `main` branch, and select **Create**.
+4. Copy the generated URL. It looks like:
+
+   ```text
+   https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/<DEPLOY_HOOK_ID>
+   ```
+
+> **The ID in that URL _is_ the credential.** There's no `Authorization` header: anyone who has the URL can trigger builds. It never goes in this repo, in a versioned `.env`, or in a commit.
+
+### 2. Fire it once a day
+
+From any machine that's always on (the homelab is fine), a daily cron entry:
+
+```cron
+17 4 * * *  curl -fsS -X POST "https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/<DEPLOY_HOOK_ID>" >/dev/null
+```
+
+Or the equivalent as a one-liner:
+
+```sh
+curl -fsS -X POST "https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/<DEPLOY_HOOK_ID>"
+```
+
+Once a day is plenty for probe uptime — hourly just burns build minutes for nothing. Deploy Hooks are rate limited to 10 builds/minute per Worker, and a repeat `POST` while the previous build is still initializing doesn't create a duplicate.
+
+## `GITHUB_TOKEN` (optional, recommended)
+
+`src/components/GithubRepos.astro` reads the GitHub API at build time. Unauthenticated, that API allows **60 requests/hour per IP**, and Cloudflare's builders go out through shared IPs — so the build can hit the limit through no fault of yours. With a token it goes to **5,000/hour**.
+
+- The component works fine without it: if the call fails, the section just doesn't render, and the build doesn't break.
+- The token needs **no scopes at all** — it only reads public data.
+- Set it in the Cloudflare dashboard → your Worker → **Settings** → **Variables and Secrets**, as a secret named `GITHUB_TOKEN`.
+- Locally, an untracked `.env` (`GITHUB_TOKEN=...`) works; `.env` is already in `.gitignore`.
+
+Never commit it, and never give it scopes.
 
 ## Structure
 
@@ -84,13 +132,14 @@ This repo doesn't touch DNS or secrets — that part stays in the Cloudflare das
 src/
 ├── content.config.ts       # schema for the "blog" collection
 ├── content/blog/           # posts in .md/.mdx
-├── components/             # PromptLogo, Header, Footer, Seo, etc.
+├── components/             # PromptLogo, Header, Footer, Seo, AtlasProbe, OoniNetwork, GithubRepos, etc.
 ├── layouts/                # BaseLayout, PostLayout
-├── pages/                  # routes: home, blog, tag, about, rss, 404
+├── lib/fetch-json.ts       # build-time fetch with timeout; returns null instead of breaking the build
+├── pages/                  # routes: home, blog, tag, projects, network, about, rss, 404
 ├── styles/global.css       # design tokens (typography, palette, theme)
 └── utils/                  # readingTime, seo (canonical), posts (listing)
 ```
 
 ## Roadmap
 
-Future features (search, command palette, .onion mirror, hosting on my own ASN, etc.) are documented in [`ROADMAP.md`](./ROADMAP.md) — intentionally not implemented yet.
+Future features (search, command palette, .onion mirror, self-hosting, etc.) are documented in [`ROADMAP.md`](./ROADMAP.md) — intentionally not implemented yet.
