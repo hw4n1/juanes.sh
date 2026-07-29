@@ -321,6 +321,6 @@ Note the `Resolved` message below — Grafana automatically sends a resolution n
 
 This stack covers the metrics layer. The next piece is **logs** — Loki for storage and Grafana Alloy as the collector. With both running, you can correlate a CPU spike in Grafana with the exact log line that caused it, which is where observability starts to feel genuinely powerful.
 
-After that: Alertmanager for proper alert routing, the `prometheus-pve-exporter` for Proxmox-specific metrics (VM states, storage usage per pool, cluster health), and eventually self-hosting this entire stack on my own ASN and infrastructure.
+After that: Alertmanager for proper alert routing, the `prometheus-pve-exporter` for Proxmox-specific metrics (VM states, storage usage per pool, cluster health), and eventually self-hosting this entire stack on my own infrastructure.
 
 The infrastructure is starting to watch itself.

@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import TagPill from '../components/TagPill.astro';
 import { SOCIAL_LINKS, CV_URL } from '../consts';
 
-const expertise = ['appsec', 'devsecops', 'pentesting', 'kernel', 'networking', 'ipv6', 'tor', 'homelab'];
+const expertise = ['appsec', 'devsecops', 'bug-bounty', 'pentesting', 'kernel', 'networking', 'tor', 'homelab'];
 
 const experience = [
   {
@@ -37,7 +37,7 @@ const experience = [
 
 <BaseLayout
   title="About"
-  description="Bio of Juan Esteban Muñoz Díaz (Juanes): application security engineer, self-built offensive lab, and ASN/IPv6 project via LACNIC."
+  description="Bio of Juan Esteban Muñoz Díaz (Juanes): application security engineer, self-built offensive lab, and contributions to public privacy infrastructure."
   canonicalURL={new URL('/about/', Astro.site)}
 >
   <article class="about measure">
@@ -99,8 +99,8 @@ const experience = [
           exploitation, network attacks, privilege escalation) with an ongoing weekly streak.
         </li>
         <li>
-          <strong>Network & infrastructure:</strong> five-VLAN segmented architecture on RouterOS with independent{' '}
-          <strong>IPv6</strong> via <strong>LACNIC</strong>; Tor relays and obfs4 bridges; OpenVPN/WireGuard.
+          <strong>Network & infrastructure:</strong> five-VLAN segmented architecture on RouterOS; a Tor middle
+          relay and obfs4 bridges; OpenVPN/WireGuard.
         </li>
         <li>
           <strong>Defensive operations:</strong> honeypots (Cowrie, Dionaea, Conpot), a MISP threat-intelligence
@@ -110,11 +110,11 @@ const experience = [
     </section>
 
     <section>
-      <h2>$ cat asn.md</h2>
+      <h2>$ cat network.md</h2>
       <p>
-        In parallel, I'm getting my own <strong>ASN</strong> via <strong>LACNIC</strong> to operate as an
-        independent autonomous system. The goal: stop depending on other people's infrastructure to serve what I
-        build, and write about the process end to end — BGP included.
+        I also run infrastructure other people depend on, not just my own: a <strong>Tor middle relay</strong>, a{' '}
+        <strong>RIPE Atlas probe</strong> feeding the global measurement network, and <strong>OONI Probe</strong>{' '}
+        contributing censorship measurements from Colombia. Live status on <a href="/network/">/network</a>.
       </p>
     </section>
 

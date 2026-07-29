@@ -1,14 +1,14 @@
 export const SITE_TITLE = 'juanes.sh';
 export const SITE_DESCRIPTION =
-  'Networking, infrastructure, BGP/ASN, privacy, and homelab — by Juan Esteban Muñoz Díaz (Juanes).';
+  'Application security, bug bounty, infrastructure, privacy, and homelab — by Juan Esteban Muñoz Díaz (Juanes).';
 export const AUTHOR_NAME = 'Juan Esteban Muñoz Díaz';
 export const AUTHOR_HANDLE = 'Juanes';
 export const AUTHOR_EMAIL = 'me@juanes.sh';
 
 export const CV_URL = '/cv-juan-esteban-munoz-diaz.pdf';
 
-// TODO: add GitHub once you have a public profile to link.
 export const SOCIAL_LINKS = [
+  { label: 'GitHub', url: 'https://github.com/hw4n1' },
   { label: 'LinkedIn', url: 'https://www.linkedin.com/in/juaesm' },
   { label: 'Medium', url: 'https://juaesm.medium.com' },
   { label: 'Email', url: `mailto:${AUTHOR_EMAIL}` },
