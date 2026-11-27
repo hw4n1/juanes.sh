@@ -1,0 +1,208 @@
+---
+/**
+ * Public services in my home rack, from the same data as status.naing.co.
+ * Resolved at build time (see src/lib/naing-status.ts): no client-side JS.
+ */
+import { getRackSnapshot, formatBytes, STATUS_URL } from '../lib/naing-status';
+
+interface Props {
+  /** Compact mode: one line per service, no facts. Used on the home page. */
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+const snap = await getRackSnapshot();
+
+const okCount = snap?.services.filter((s) => s.state === 'ok').length ?? 0;
+const total = snap?.services.length ?? 0;
+const takenAt = snap?.takenAt.toISOString();
+const takenAtLabel = takenAt ? `${takenAt.slice(0, 16).replace('T', ' ')} UTC` : null;
+const nf = new Intl.NumberFormat('en-US');
+const m = snap?.mirrorsTotal;
+---
+
+<section class:list={['rack', { compact }]} aria-labelledby="rack-status">
+  <h2 class="cmd" id="rack-status">
+    <span class="prompt" aria-hidden="true">$</span> curl status.naing.co
+  </h2>
+
+  {
+    !compact && (
+      <p class="note">
+        Public services running from a rack in my home in Colombia. Anyone can use them — that's the point.
+      </p>
+    )
+  }
+
+  {
+    snap ? (
+      <>
+        <p class="summary">
+          <span class:list={['dot', okCount === total ? 'ok' : 'warn']} aria-hidden="true" />
+          {okCount === total ? 'all services running' : `${okCount}/${total} services running`}
+        </p>
+        <ul class="services">
+          {snap.services.map((s) => (
+            <li>
+              <span class="name">
+                <span class:list={['dot', s.state]} aria-hidden="true" />
+                {s.name}
+              </span>
+              <span class="state">{s.stateText}</span>
+              {!compact && s.facts.length > 0 && <span class="facts">{s.facts.join(' · ')}</span>}
+            </li>
+          ))}
+        </ul>
+        {!compact && m && m.requests !== null && m.bytes !== null && (
+          <p class="totals">
+            mirrors, last 24h: {nf.format(m.requests)} downloads · {formatBytes(m.bytes)}
+            {m.countries !== null && <> · {m.countries} countries</>}
+          </p>
+        )}
+        <p class="src">
+          snapshot from <time datetime={takenAt}>{takenAtLabel}</time> ·{' '}
+          <a href={STATUS_URL} rel="noopener">
+            live status →
+          </a>
+        </p>
+      </>
+    ) : (
+      <p class="fallback">
+        Couldn't reach the rack on the last build (power cut? rodent? cosmic ray?).{' '}
+        <a href={STATUS_URL} rel="noopener">
+          Check status.naing.co
+        </a>
+      </p>
+    )
+  }
+</section>
+
+<style>
+  .rack {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+  }
+
+  .cmd {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: normal;
+    color: var(--ink-900);
+  }
+
+  .prompt {
+    color: var(--accent);
+  }
+
+  .note,
+  .fallback {
+    margin: 0 0 1rem;
+    max-width: 62ch;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--ink-500);
+  }
+
+  .summary {
+    margin: 0 0 0.6rem;
+    color: var(--ink-900);
+  }
+
+  .services {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: minmax(14rem, max-content) 1fr;
+    gap: 0.35rem 1.25rem;
+  }
+
+  .services li {
+    display: contents;
+  }
+
+  .name {
+    color: var(--ink-900);
+  }
+
+  .state {
+    color: var(--ink-500);
+  }
+
+  .facts {
+    grid-column: 2;
+    margin-top: -0.3rem;
+    font-size: var(--text-xs);
+    color: var(--ink-700);
+  }
+
+  .dot {
+    display: inline-block;
+    width: 0.55em;
+    height: 0.55em;
+    margin-right: 0.7ch;
+    border-radius: 50%;
+    vertical-align: 0.1em;
+    background: var(--ink-500);
+  }
+
+  .dot.ok {
+    background: var(--accent);
+  }
+
+  .dot.warn {
+    background: #d4a72c;
+  }
+
+  .dot.down {
+    background: #d1453b;
+  }
+
+  .totals {
+    margin: 0.9rem 0 0;
+    color: var(--ink-700);
+  }
+
+  .src {
+    margin: 0.75rem 0 0;
+    font-size: var(--text-xs);
+    color: var(--ink-500);
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    text-underline-offset: 0.25em;
+  }
+
+  a:hover {
+    text-decoration-color: var(--accent);
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 36rem) {
+    .services {
+      grid-template-columns: 1fr;
+      gap: 0.1rem;
+    }
+
+    .state,
+    .facts {
+      grid-column: 1;
+      padding-left: 1.4em;
+      margin-top: 0;
+    }
+
+    .services li + li .name {
+      margin-top: 0.5rem;
+    }
+  }
+</style>
