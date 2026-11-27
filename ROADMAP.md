@@ -14,6 +14,6 @@ Future features for juanes.sh, organized by phase. None of this is implemented i
 
 - **`.onion` mirror of the site** as a Tor hidden service.
 - **Hosting on my own infrastructure** — serving the site from the homelab instead of depending entirely on a third-party edge.
-- **Live status page** with read-only metrics from my cluster (exposed carefully, without opening up unnecessary attack surface).
+- ~~**Live status page** with read-only metrics from my cluster~~ — done: [status.naing.co](https://status.naing.co), with a build-time snapshot on `/network` and the home page.
 - **`security.txt`** and a page with a public PGP key, for vulnerability reports and encrypted contact.
 - **`/uses`, `/now`, and `/talks` pages** — hardware/software I use, what I'm doing now, talks given (DEF CON and others).

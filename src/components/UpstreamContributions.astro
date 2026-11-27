@@ -1,0 +1,167 @@
+---
+/**
+ * Patches I've landed in other people's projects. Hand-maintained on purpose:
+ * each entry is verifiable through its MR, its bug and the release it shipped in.
+ */
+interface Contribution {
+  title: string;
+  what: string;
+  mr: string;
+  bug: { id: number; url: string; filed: string };
+  release: string;
+}
+
+const contributions: { project: string; projectUrl: string; items: Contribution[] }[] = [
+  {
+    project: 'Debian adduser',
+    projectUrl: 'https://salsa.debian.org/debian/adduser',
+    items: [
+      {
+        title: 'do not re-use ids',
+        what: 'adduser now remembers the highest uid/gid it ever handed out, so a new account never inherits the id — and the leftover files — of a deleted one. Opt out with REUSE_IDS; 69 new test assertions.',
+        mr: 'https://salsa.debian.org/debian/adduser/-/merge_requests/144',
+        bug: { id: 248500, url: 'https://bugs.debian.org/248500', filed: '2004' },
+        release: '3.160',
+      },
+      {
+        title: '--add-authorized-key',
+        what: "Install SSH public keys, from a file or the command line, into the new user's ~/.ssh/authorized_keys at creation time.",
+        mr: 'https://salsa.debian.org/debian/adduser/-/merge_requests/141',
+        bug: { id: 446362, url: 'https://bugs.debian.org/446362', filed: '2007' },
+        release: '3.159',
+      },
+    ],
+  },
+];
+---
+
+<section class="upstream" id="upstream" aria-labelledby="upstream-title">
+  <h2 class="cmd" id="upstream-title">
+    <span class="prompt" aria-hidden="true">$</span> git log --author=juanes upstream/
+  </h2>
+  <p class="note">
+    Patches merged into projects I don't own. The bugs they close had been waiting a while.
+  </p>
+
+  {
+    contributions.map((group) => (
+      <div class="group">
+        <p class="project">
+          <a href={group.projectUrl} rel="noopener">{group.project}</a>
+        </p>
+        <ul>
+          {group.items.map((c) => (
+            <li>
+              <p class="title">
+                <code>{c.title}</code>
+                <span class="meta">
+                  merged · shipped in {c.release}
+                </span>
+              </p>
+              <p class="what">{c.what}</p>
+              <p class="links">
+                <a href={c.mr} rel="noopener">merge request</a>
+                <span aria-hidden="true">·</span>
+                <a href={c.bug.url} rel="noopener">
+                  #{c.bug.id}
+                </a>{' '}
+                <span class="age">(filed {c.bug.filed}, {new Date().getFullYear() - Number(c.bug.filed)} years of patience)</span>
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+</section>
+
+<style>
+  .upstream {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+  }
+
+  .cmd {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: normal;
+    color: var(--ink-900);
+  }
+
+  .prompt {
+    color: var(--accent);
+  }
+
+  .note,
+  .what {
+    max-width: 62ch;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+  }
+
+  .note {
+    margin: 0 0 1rem;
+    color: var(--ink-500);
+  }
+
+  .project {
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .title {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    align-items: baseline;
+    color: var(--ink-900);
+  }
+
+  .meta,
+  .age {
+    color: var(--ink-500);
+    font-size: var(--text-xs);
+  }
+
+  .what {
+    margin: 0.2rem 0 0.3rem;
+    color: var(--ink-700);
+  }
+
+  .links {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.6rem;
+    align-items: baseline;
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    text-underline-offset: 0.25em;
+  }
+
+  a:hover {
+    text-decoration-color: var(--accent);
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+</style>

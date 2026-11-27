@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import GithubRepos from '../components/GithubRepos.astro';
+import UpstreamContributions from '../components/UpstreamContributions.astro';
 ---
 
 <BaseLayout
   title="Projects"
-  description="A hand-picked selection of my public repositories: kernel-level offensive research, Go libraries, and tooling."
+  description="Upstream patches (Debian adduser) and a hand-picked selection of my public repositories: kernel-level offensive research, Go libraries, and tooling."
   canonicalURL={new URL('/projects/', Astro.site)}
 >
   <div class="page">
@@ -13,12 +14,14 @@ import GithubRepos from '../components/GithubRepos.astro';
       <p class="prompt-prefix" aria-hidden="true">$ ls projects/</p>
       <h1>Projects</h1>
       <p class="lead">
-        A hand-picked selection, not everything I've pushed. Language, stars and last-push date come from the
-        GitHub API at build time; the descriptions are written here.
+        Patches that landed upstream, plus a hand-picked selection of my own repos — not everything I've pushed.
+        Language, stars and last-push date come from the GitHub API at build time; the descriptions are written
+        here.
       </p>
     </header>
 
     <div class="panels">
+      <UpstreamContributions />
       <GithubRepos user="hw4n1" />
     </div>
   </div>

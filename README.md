@@ -80,7 +80,7 @@ This repo doesn't touch DNS or secrets — that part stays in the Cloudflare das
 
 ## Build-time data and the scheduled rebuild
 
-`/network` and `/projects` resolve their data (RIPE Atlas, OONI, GitHub) **during the build**, so that no third-party request leaves the reader's browser: zero client-side JavaScript, zero tracking.
+`/network` and `/projects` resolve their data (the home rack via `data.naing.co/public.json` — the same feed as status.naing.co —, RIPE Atlas, OONI, GitHub) **during the build**, so that no third-party request leaves the reader's browser: zero client-side JavaScript, zero tracking.
 
 The trade-off is that the data is frozen until the next deploy. A daily rebuild fixes that.
 
@@ -132,7 +132,7 @@ Never commit it, and never give it scopes.
 src/
 ├── content.config.ts       # schema for the "blog" collection
 ├── content/blog/           # posts in .md/.mdx
-├── components/             # PromptLogo, Header, Footer, Seo, AtlasProbe, OoniNetwork, GithubRepos, etc.
+├── components/             # PromptLogo, Header, Footer, Seo, RackStatus, AtlasProbe, OoniNetwork, GithubRepos, etc.
 ├── layouts/                # BaseLayout, PostLayout
 ├── lib/fetch-json.ts       # build-time fetch with timeout; returns null instead of breaking the build
 ├── pages/                  # routes: home, blog, tag, projects, network, about, rss, 404
