@@ -1,6 +1,6 @@
 export const SITE_TITLE = 'juanes.sh';
 export const SITE_DESCRIPTION =
-  'Application security, bug bounty, infrastructure, privacy, and homelab — by Juan Esteban Muñoz Díaz (Juanes).';
+  'Security engineering, Linux, open source, and a home rack serving the internet — by Juan Esteban Muñoz Díaz (Juanes).';
 export const AUTHOR_NAME = 'Juan Esteban Muñoz Díaz';
 export const AUTHOR_HANDLE = 'Juanes';
 export const AUTHOR_EMAIL = 'me@juanes.sh';

@@ -5,166 +5,166 @@ import { SOCIAL_LINKS, CV_URL } from '../consts';
 
 const expertise = ['appsec', 'devsecops', 'bug-bounty', 'pentesting', 'kernel', 'networking', 'tor', 'homelab'];
 
-const experience = [
+// The lore: what happened, told the way it felt. The boring version is in the CV.
+const lore = [
   {
-    role: 'Application Security / Security QA Engineer',
-    org: 'B2Gnow (via Insight Global)',
-    place: 'Phoenix, AZ — remote',
-    dates: '2026 – present',
-    summary:
-      'Data-path and sensitive-data security for eComply, a U.S. government compliance platform (legacy ASP.NET MVC).',
-    bullets: [
-      "Mapped system architecture and data flows across 1,500+ endpoints to build the platform's first inventory of sensitive-data entry points and risk exposure — from a codebase with near-zero documentation.",
-      'Designed an automated authorization-sweep approach to validate access control (IDOR, privilege escalation, broken authZ) at scale, surfacing the highest-impact risks across all endpoints rather than one at a time.',
-      'Built automated security test suites for critical data paths and integrated them into CI/CD pipelines, enabling continuous validation of authentication, authorization, and session-management controls.',
-      'Performed negative security testing to confirm no sensitive data leaks through logs, API responses, or error messages.',
-    ],
+    when: '2026 – now',
+    title: 'Cartographer of a labyrinth nobody drew',
+    story:
+      'Dropped into a legacy ASP.NET kingdom with 1,500+ doors and no map. Drew the map. Then knocked on every door to ask whether it should really open for this person. More than fifteen of them, it turned out, should not have — so I stayed until each one was locked and checked the lock myself.',
+    actually:
+      'Security Engineer at B2Gnow (via Insight Global): vulnerability lifecycle from manual pentesting to verified fix, mostly IDOR and privilege escalation.',
   },
   {
-    role: 'Test Automation Engineer',
-    org: 'Globant',
-    place: 'Bogotá — hybrid',
-    dates: '2025 – 2026',
-    summary: 'Qiddiya program — large-scale Web / Mobile / API quality automation.',
-    bullets: [
-      'Built cross-platform automation frameworks (Playwright, Appium, Cucumber) for Web, Mobile, and API, reaching 90% automated coverage on critical business flows.',
-      'Integrated automation suites into GitLab CI/CD pipelines, shortening feedback loops and improving release reliability.',
-      'Applied a shift-left approach, analyzing system architecture early to surface failure points before release; contributed to an internal AI-powered testing agent.',
-    ],
+    when: '2026',
+    title: 'Closing bugs from 2004',
+    story:
+      "Someone asked Debian's adduser in 2004 to stop handing a dead account's user id to a new one. Someone else asked it in 2007 to install SSH keys for new users. Both requests waited patiently for about two decades. Then I showed up, read some Perl, and they shipped.",
+    actually: 'Two patches merged upstream into Debian adduser, released in 3.159 and 3.160.',
+    link: { href: '/projects/#upstream', text: 'details on /projects' },
   },
+  {
+    when: '2026 – 2027',
+    title: 'Interrogating kernels with math',
+    story:
+      'Asking a Linux kernel, politely and with entropy, whether something is hiding inside it. To understand the liars, I also write the liars: kernel modules that hook syscalls and whisper through Netfilter. For science.',
+    actually: 'M.S. in Information Security at Universidad de los Andes. Thesis: rootkit detection via information theory.',
+  },
+  {
+    when: '2025 – 2026',
+    title: 'Robot whisperer',
+    story:
+      'Taught small robots to tap phones, click websites and poke APIs until 90% of the important buttons were pressed without a human. The robots never asked why. I respected that.',
+    actually: 'Test Automation Engineer at Globant (TypeScript, Python, GitLab CI/CD).',
+  },
+  {
+    when: '2022 – 2025',
+    title: 'Survived Operating Systems, then taught it',
+    story:
+      'Studied systems engineering, then went back to teach OS, data structures and advanced programming to people going through what I had just gone through. Also helped run a student branch that ended up the best in the country.',
+    actually: 'B.S. in Systems Engineering, Pontificia Universidad Javeriana. TA, and Vice-Chair of IEEE Javeriana.',
+  },
+];
+
+// Things running right now that no one asked for.
+const unrequested = [
+  ['Two package mirrors', 'Arch Linux and Debian, synced around the clock, ~1 TB of other people’s updates.'],
+  ['The time', 'A stratum-1 NTP server in the public pool, telling South America what time it is a few thousand times per second.'],
+  ['A Tor relay', 'Forwarding strangers’ traffic without knowing who they are. That’s the whole idea.'],
+  ['Two probes', 'RIPE Atlas measuring the internet and OONI measuring censorship in Colombia.'],
+  [
+    'A cluster with a Raspberry Pi as tiebreaker',
+    'Two Proxmox nodes that couldn’t agree on anything, so a Pi now casts the deciding vote.',
+  ],
+  [
+    'Two internet connections',
+    'Dual WAN with failover and a static /29, because the rack does not accept "the ISP is down" as an excuse.',
+  ],
+  ['VLANs on a MikroTik', 'Segmented, because one flat network is how horror movies start. Slowly turning into Ansible and Terraform.'],
+  ['Honeypots', 'Cowrie, Dionaea and Conpot pretending to be vulnerable, feeding MISP and Wazuh with whoever falls for it.'],
+];
+
+const achievements = [
+  '1st place in Colombia — IEEEXtreme 18 (2024). 24 hours of programming, zero hours of sleep.',
+  '2nd place — CyberWings, the Colombian Air Force cybersecurity competition. No planes were involved.',
+  'Judge at the VEX Robotics World Championship in Dallas. Robots were, again, involved.',
+  'Founded chapters and led technical teams of 30+ people at IEEE Javeriana and IEEE Uniandes.',
+  '100th percentile nationally on the Saber 11 exam. Peaked at seventeen, still coasting.',
+  'Paperwork that says I know things: eJPT, ISC2 CC, INE CCA, Google Cloud Digital Leader.',
 ];
 ---
 
 <BaseLayout
   title="About"
-  description="Bio of Juan Esteban Muñoz Díaz (Juanes): application security engineer, self-built offensive lab, and contributions to public privacy infrastructure."
+  description="Juan Esteban Muñoz Díaz (Juanes): security engineer building things the universe didn't ask for — Debian patches, a home rack of public mirrors, a Tor relay, an NTP server and a kernel thesis."
   canonicalURL={new URL('/about/', Astro.site)}
 >
   <article class="about measure">
     <header>
       <p class="prompt-prefix" aria-hidden="true">$ cat about.md</p>
       <h1>Juan Esteban Muñoz Díaz</h1>
-      <p class="subtitle">Application Security Engineer · Security Automation & AppSec Testing — "Juanes"</p>
-      <a class="cv-link" href={CV_URL} target="_blank" rel="noopener">↓ download CV (PDF)</a>
+      <p class="subtitle">"Juanes" · security engineer · building things the universe didn't ask for</p>
     </header>
 
     <section>
       <p>
-        Application security engineer focused on securing APIs and data paths through automated security testing
-        and CI/CD integration. I come from large-scale test automation, plus my own research into offensive
-        security and Linux internals — the same attacker's mindset applied to building security guardrails that
-        development teams actually use.
+        I break things professionally so they don't break by accident. Officially that's called vulnerability
+        response. Unofficially, it's a habit of opening every door to see what's behind it, then refusing to leave
+        until someone fixes the lock. I speak Spanish, English, French, C, Python, Go, Bash and, recently, Perl.
+      </p>
+      <p>
+        The rest of the time I run a small rack at home that quietly serves the internet things it never asked
+        for: Linux mirrors, the time, Tor traffic. It's monitored live at{' '}
+        <a href="https://status.naing.co" rel="noopener">status.naing.co</a> and summarised on{' '}
+        <a href="/network/">/network</a>.
       </p>
     </section>
 
     <section>
-      <h2>$ cat experience.md</h2>
-      <div class="experience-list">
+      <h2>$ cat lore.md</h2>
+      <ol class="lore">
         {
-          experience.map((job) => (
-            <article class="job">
-              <div class="job-head">
-                <h3>{job.role}</h3>
-                <p class="job-dates">{job.dates}</p>
-              </div>
-              <p class="job-org">
-                {job.org} <span aria-hidden="true">·</span> {job.place}
+          lore.map((entry) => (
+            <li class="chapter">
+              <p class="when">{entry.when}</p>
+              <h3>{entry.title}</h3>
+              <p class="story">{entry.story}</p>
+              <p class="actually">
+                <span class="actually-label">translation:</span> {entry.actually}
+                {entry.link && (
+                  <>
+                    {' '}
+                    <a href={entry.link.href}>{entry.link.text}</a>
+                  </>
+                )}
               </p>
-              <p class="job-summary">{job.summary}</p>
-              <ul>
-                {job.bullets.map((bullet) => <li>{bullet}</li>)}
-              </ul>
-            </article>
+            </li>
           ))
         }
-      </div>
+      </ol>
+      <p class="boring">
+        Prefer the version with bullet points and verbs like "leveraged"?{' '}
+        <a href={CV_URL} target="_blank" rel="noopener">↓ the serious CV (PDF)</a>
+      </p>
     </section>
 
     <section>
-      <h2>$ cat lab.md</h2>
-      <p>
-        My personal lab is where I practice the offensive depth I later apply to AppSec — it's not a demo, it's real
-        infrastructure I keep running in production for myself. It runs on a two-node <strong>Proxmox</strong>{' '}
-        cluster with real quorum via a Raspberry Pi as a QDevice
-        (<a href="/blog/the-qdevice-that-wouldnt-vote/">see the post</a>).
+      <h2>$ ls ~/things-nobody-asked-for/</h2>
+      <dl class="unrequested">
+        {
+          unrequested.map(([what, why]) => (
+            <div>
+              <dt>{what}</dt>
+              <dd>{why}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="muted small">
+        The cluster story, including the vote that wouldn't happen, is{' '}
+        <a href="/blog/the-qdevice-that-wouldnt-vote/">in the blog</a>. I also keep a weekly streak on Hack The Box,
+        which is the gym, but for breaking into things legally.
       </p>
-      <ul class="lab-list">
-        <li>
-          <strong>Offensive research:</strong> Linux kernel-module development in C (syscall-table manipulation, CR0
-          write-protection bypass, syscall hooking, covert C2 over Netfilter). M.S. thesis on rootkit detection via
-          kernel-level entropy analysis.
-        </li>
-        <li>
-          <strong>Hands-on practice:</strong> continuous offensive-security practice on Hack The Box (web
-          exploitation, network attacks, privilege escalation) with an ongoing weekly streak.
-        </li>
-        <li>
-          <strong>Network & infrastructure:</strong> five-VLAN segmented architecture on RouterOS; a Tor middle
-          relay and obfs4 bridges; OpenVPN/WireGuard.
-        </li>
-        <li>
-          <strong>Defensive operations:</strong> honeypots (Cowrie, Dionaea, Conpot), a MISP threat-intelligence
-          pipeline, and Wazuh SIEM monitoring in an isolated sandbox.
-        </li>
+    </section>
+
+    <section>
+      <h2>$ cat achievements.unlocked</h2>
+      <ul class="recognition-list">
+        {achievements.map((a) => <li>{a}</li>)}
       </ul>
     </section>
 
     <section>
-      <h2>$ cat network.md</h2>
-      <p>
-        I also run infrastructure other people depend on, not just my own: a <strong>Tor middle relay</strong>, a{' '}
-        <strong>RIPE Atlas probe</strong> feeding the global measurement network, and <strong>OONI Probe</strong>{' '}
-        contributing censorship measurements from Colombia. Live status on <a href="/network/">/network</a>.
-      </p>
-    </section>
-
-    <section>
-      <h2>$ cat education.md</h2>
-      <ul class="education-list">
-        <li>
-          <p class="edu-title">M.S. in Information Security <span class="edu-dates">in progress · 2026–2027</span></p>
-          <p class="edu-org">Universidad de los Andes, Bogotá</p>
-          <p>
-            Offensive and defensive security: cloud security, network defense, cryptography, secure programming,
-            digital forensics. Thesis: Linux rootkit detection via information theory.
-          </p>
-        </li>
-        <li>
-          <p class="edu-title">B.S. in Systems Engineering <span class="edu-dates">2022–2025</span></p>
-          <p class="edu-org">Pontificia Universidad Javeriana, Bogotá</p>
-          <p>
-            Strong foundation in networks, operating systems, and security. Teaching assistant (OS, data structures,
-            advanced programming); Vice-Chair of IEEE Javeriana (Best Student Branch in Colombia).
-          </p>
-        </li>
-      </ul>
-      <p class="certs">
-        <strong>Certifications:</strong> eJPT (eLearnSecurity Junior Penetration Tester, 2025) · ISC2 CC (Certified
-        in Cybersecurity) · INE CCA (Certified Cloud Associate) · Google Cloud Digital Leader.
-      </p>
-    </section>
-
-    <section>
-      <h2>$ ls expertise/</h2>
+      <h2>$ ls known-side-effects/</h2>
       <ul class="expertise-list">
         {expertise.map((tag) => <li><TagPill tag={tag} static /></li>)}
       </ul>
     </section>
 
     <section>
-      <h2>$ cat recognition.md</h2>
-      <ul class="recognition-list">
-        <li>1st place in Colombia — IEEEXtreme 18 Programming Competition (2024).</li>
-        <li>2nd place — CyberWings cybersecurity competition, Colombian Air Force.</li>
-        <li>Judge — VEX Robotics World Championship, Dallas, USA.</li>
-        <li>Founded chapters and led technical teams of 30+ members across IEEE Javeriana and IEEE Uniandes.</li>
-      </ul>
-    </section>
-
-    <section>
       <h2>$ cat talks.md</h2>
       <p class="muted">
-        No public talks yet. The goal is to make it to DEF CON — this space will get updated when it happens.
+        No public talks yet. The plan is DEF CON. The universe has not been consulted, as usual.
       </p>
     </section>
 
@@ -209,24 +209,12 @@ const experience = [
     margin-top: 0.6rem;
   }
 
-  .cv-link {
-    display: inline-block;
-    margin-top: 1.1rem;
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    color: var(--accent);
-    border: 1px solid var(--border);
-    border-radius: 0.4rem;
-    padding: 0.4rem 0.8rem;
-    text-decoration: none;
-  }
-
-  .cv-link:hover {
-    border-color: var(--accent);
-  }
-
   section {
     margin-top: 2.4rem;
+  }
+
+  section > p + p {
+    margin-top: 1rem;
   }
 
   section h2 {
@@ -246,7 +234,7 @@ const experience = [
     line-height: 1.7;
   }
 
-  section p a {
+  section a {
     color: var(--accent);
     text-decoration: underline;
     text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
@@ -254,6 +242,77 @@ const experience = [
 
   .muted {
     color: var(--ink-500);
+  }
+
+  .small {
+    margin-top: 1.25rem;
+    font-size: var(--text-sm);
+  }
+
+  .lore {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .chapter {
+    border-left: 2px solid var(--border);
+    padding-left: 1.1rem;
+  }
+
+  .when {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--ink-500);
+  }
+
+  .chapter h3 {
+    margin-top: 0.2rem;
+  }
+
+  .story {
+    margin-top: 0.5rem;
+  }
+
+  .actually {
+    margin-top: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--ink-700);
+  }
+
+  .actually-label {
+    color: var(--accent);
+  }
+
+  .boring {
+    margin-top: 2rem;
+    font-size: var(--text-sm);
+    color: var(--ink-700);
+  }
+
+  .boring a {
+    font-family: var(--font-mono);
+  }
+
+  .unrequested {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin: 0;
+  }
+
+  .unrequested dt {
+    font-weight: 600;
+    color: var(--ink-900);
+  }
+
+  .unrequested dd {
+    margin: 0.15rem 0 0;
+    color: var(--ink-700);
+    line-height: 1.6;
   }
 
   .expertise-list,
@@ -270,54 +329,6 @@ const experience = [
     font-size: var(--text-sm);
   }
 
-  .contact-list a {
-    color: var(--accent);
-    text-decoration: underline;
-    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
-  }
-
-  .experience-list {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-
-  .job-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
-
-  .job-dates,
-  .edu-dates {
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    color: var(--ink-500);
-  }
-
-  .job-org {
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    color: var(--ink-700);
-    margin-top: 0.3rem;
-  }
-
-  .job-summary {
-    margin-top: 0.6rem;
-    color: var(--ink-700);
-  }
-
-  .job ul {
-    margin-top: 0.85rem;
-    padding-left: 1.3em;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .lab-list,
   .recognition-list {
     margin-top: 1rem;
     padding-left: 1.3em;
@@ -326,34 +337,5 @@ const experience = [
     gap: 0.7rem;
     color: var(--ink-900);
     line-height: 1.7;
-  }
-
-  .education-list {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .edu-title {
-    font-weight: 600;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-    align-items: baseline;
-  }
-
-  .edu-org {
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    color: var(--ink-700);
-    margin-top: 0.2rem;
-  }
-
-  .certs {
-    margin-top: 1.25rem;
-    font-size: var(--text-sm);
-    color: var(--ink-700);
   }
 </style>
